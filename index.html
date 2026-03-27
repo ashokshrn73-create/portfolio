@@ -1,57 +1,813 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="script.js"></script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Ashok | ECE Engineer & Embedded Systems Developer</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --card: #16161f;
+    --border: #1e1e2e;
+    --accent: #00d4ff;
+    --accent2: #7c3aed;
+    --accent3: #10b981;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --mono: 'Space Mono', monospace;
+    --display: 'Syne', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* CUSTOM CURSOR */
+  .cursor {
+    position: fixed; width: 12px; height: 12px;
+    background: var(--accent); border-radius: 50%;
+    pointer-events: none; z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s, width 0.2s, height 0.2s, background 0.2s;
+    mix-blend-mode: screen;
+  }
+  .cursor-ring {
+    position: fixed; width: 36px; height: 36px;
+    border: 1.5px solid var(--accent); border-radius: 50%;
+    pointer-events: none; z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: transform 0.15s ease, width 0.3s, height 0.3s, opacity 0.3s;
+    opacity: 0.5;
+  }
+  body:hover .cursor { opacity: 1; }
+
+  /* GRID BACKGROUND */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none; z-index: 0;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 60px;
+    background: rgba(10,10,15,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: var(--display); font-size: 1.4rem; font-weight: 800;
+    color: var(--accent); letter-spacing: -0.02em;
+  }
+  .nav-logo span { color: var(--text); }
+  .nav-links { display: flex; gap: 36px; list-style: none; }
+  .nav-links a {
+    color: var(--muted); text-decoration: none; font-size: 0.75rem;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+
+  /* SECTIONS */
+  section { position: relative; z-index: 1; }
+
+  /* HERO */
+  #hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    justify-content: center; padding: 120px 60px 60px;
+    overflow: hidden;
+  }
+
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--accent); border: 1px solid rgba(0,212,255,0.3);
+    padding: 6px 14px; border-radius: 2px; margin-bottom: 32px;
+    width: fit-content;
+    animation: fadeUp 0.8s ease both;
+  }
+  .hero-tag::before {
+    content: ''; width: 6px; height: 6px;
+    background: var(--accent); border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.7); }
+  }
+
+  .hero-name {
+    font-family: var(--display); font-size: clamp(4rem, 10vw, 8rem);
+    font-weight: 800; line-height: 0.9; letter-spacing: -0.04em;
+    color: #fff; margin-bottom: 16px;
+    animation: fadeUp 0.8s 0.1s ease both;
+  }
+  .hero-name .accent { color: var(--accent); }
+
+  .hero-role {
+    font-family: var(--display); font-size: clamp(1.2rem, 3vw, 2rem);
+    font-weight: 600; color: var(--muted); margin-bottom: 32px;
+    animation: fadeUp 0.8s 0.2s ease both;
+  }
+
+  .hero-desc {
+    max-width: 580px; font-size: 0.85rem; line-height: 1.9;
+    color: var(--muted); margin-bottom: 48px;
+    animation: fadeUp 0.8s 0.3s ease both;
+  }
+
+  .hero-cta {
+    display: flex; gap: 16px; flex-wrap: wrap;
+    animation: fadeUp 0.8s 0.4s ease both;
+  }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 14px 28px; font-family: var(--mono); font-size: 0.78rem;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    text-decoration: none; border-radius: 2px;
+    transition: all 0.25s; cursor: none;
+  }
+  .btn-primary {
+    background: var(--accent); color: #000; font-weight: 700;
+    border: 2px solid var(--accent);
+  }
+  .btn-primary:hover { background: transparent; color: var(--accent); transform: translateY(-2px); }
+  .btn-outline {
+    background: transparent; color: var(--text);
+    border: 2px solid var(--border);
+  }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+
+  /* Floating circuit nodes */
+  .hero-visual {
+    position: absolute; right: 60px; top: 50%;
+    transform: translateY(-50%);
+    width: 420px; height: 420px;
+    animation: fadeUp 1s 0.5s ease both;
+  }
+  .circuit-svg { width: 100%; height: 100%; opacity: 0.6; }
+
+  /* STATS BAR */
+  .stats-bar {
+    display: flex; gap: 0; border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border); margin: 0 60px;
+    overflow: hidden;
+    animation: fadeUp 0.8s 0.6s ease both;
+  }
+  .stat {
+    flex: 1; padding: 28px 32px;
+    border-right: 1px solid var(--border);
+    position: relative; overflow: hidden;
+    transition: background 0.3s;
+  }
+  .stat:last-child { border-right: none; }
+  .stat:hover { background: var(--card); }
+  .stat-val {
+    font-family: var(--display); font-size: 2.4rem; font-weight: 800;
+    color: var(--accent); line-height: 1; margin-bottom: 6px;
+  }
+  .stat-label { font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); }
+
+  /* ABOUT */
+  #about {
+    padding: 100px 60px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+  }
+
+  .section-tag {
+    font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 16px; display: block;
+  }
+  .section-title {
+    font-family: var(--display); font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800; line-height: 1.1; letter-spacing: -0.03em;
+    color: #fff; margin-bottom: 24px;
+  }
+  .section-title span { color: var(--accent); }
+  .section-body { font-size: 0.84rem; line-height: 2; color: var(--muted); }
+
+  .about-details { display: flex; flex-direction: column; gap: 16px; margin-top: 32px; }
+  .detail-row {
+    display: flex; align-items: center; gap: 16px;
+    font-size: 0.78rem; padding: 14px 18px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 4px;
+  }
+  .detail-icon { color: var(--accent); font-size: 1rem; min-width: 20px; text-align: center; }
+  .detail-label { color: var(--muted); min-width: 80px; }
+  .detail-val { color: var(--text); font-weight: 700; }
+
+  .about-image-wrap {
+    position: relative; display: flex; justify-content: center; align-items: center;
+  }
+  .avatar-placeholder {
+    width: 320px; height: 320px; border-radius: 4px;
+    background: var(--card); border: 2px solid var(--border);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 12px; color: var(--muted); font-size: 0.75rem;
+    position: relative; overflow: hidden;
+  }
+  .avatar-placeholder::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(0,212,255,0.05) 0%, transparent 60%);
+  }
+  .avatar-icon { font-size: 5rem; }
+
+  .glow-ring {
+    position: absolute; width: 380px; height: 380px;
+    border: 1px solid rgba(0,212,255,0.15); border-radius: 50%;
+    animation: spin 20s linear infinite;
+  }
+  .glow-ring::after {
+    content: '';
+    position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+    width: 8px; height: 8px; background: var(--accent); border-radius: 50%;
+    box-shadow: 0 0 12px var(--accent);
+  }
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+  /* SKILLS */
+  #skills { padding: 100px 60px; }
+  .skills-header { text-align: center; margin-bottom: 60px; }
+
+  .skills-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;
+  }
+  .skill-card {
+    background: var(--card); border: 1px solid var(--border);
+    padding: 28px; border-radius: 6px;
+    transition: all 0.3s; position: relative; overflow: hidden;
+  }
+  .skill-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transform: scaleX(0); transform-origin: left;
+    transition: transform 0.3s;
+  }
+  .skill-card:hover { border-color: rgba(0,212,255,0.3); transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+  .skill-card:hover::before { transform: scaleX(1); }
+
+  .skill-icon { font-size: 2rem; margin-bottom: 16px; }
+  .skill-name { font-family: var(--display); font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 8px; }
+  .skill-items { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+  .skill-tag {
+    font-size: 0.68rem; padding: 4px 10px;
+    background: rgba(0,212,255,0.08); color: var(--accent);
+    border: 1px solid rgba(0,212,255,0.2); border-radius: 2px;
+    letter-spacing: 0.08em;
+  }
+
+  /* PROJECTS */
+  #projects { padding: 100px 60px; }
+  .projects-header { margin-bottom: 60px; }
+
+  .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 24px; }
+
+  .project-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 6px; overflow: hidden;
+    transition: all 0.3s; position: relative;
+  }
+  .project-card:hover { border-color: rgba(0,212,255,0.4); transform: translateY(-6px); box-shadow: 0 30px 60px rgba(0,0,0,0.5); }
+
+  .project-header {
+    padding: 28px 28px 20px;
+    background: linear-gradient(135deg, rgba(0,212,255,0.06) 0%, transparent 100%);
+    border-bottom: 1px solid var(--border);
+  }
+  .project-no { font-size: 0.65rem; letter-spacing: 0.2em; color: var(--accent); margin-bottom: 12px; }
+  .project-title { font-family: var(--display); font-size: 1.3rem; font-weight: 700; color: #fff; margin-bottom: 8px; }
+  .project-tech { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.08em; }
+  .project-body { padding: 24px 28px; }
+  .project-desc { font-size: 0.8rem; line-height: 1.9; color: var(--muted); margin-bottom: 20px; }
+  .project-features { display: flex; flex-direction: column; gap: 8px; }
+  .feature {
+    display: flex; align-items: flex-start; gap: 10px;
+    font-size: 0.75rem; color: var(--muted);
+  }
+  .feature::before { content: '→'; color: var(--accent); flex-shrink: 0; }
+
+  /* EDUCATION */
+  #education { padding: 100px 60px; }
+  .edu-timeline { position: relative; padding-left: 40px; margin-top: 60px; }
+  .edu-timeline::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 1px; background: linear-gradient(to bottom, var(--accent), transparent);
+  }
+
+  .edu-item {
+    position: relative; margin-bottom: 48px; padding: 28px;
+    background: var(--card); border: 1px solid var(--border); border-radius: 6px;
+    transition: all 0.3s;
+  }
+  .edu-item:hover { border-color: rgba(0,212,255,0.3); }
+  .edu-item::before {
+    content: ''; position: absolute; left: -44px; top: 36px;
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--accent); box-shadow: 0 0 12px var(--accent);
+  }
+
+  .edu-year {
+    font-size: 0.68rem; letter-spacing: 0.15em; color: var(--accent);
+    text-transform: uppercase; margin-bottom: 8px;
+  }
+  .edu-degree { font-family: var(--display); font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 4px; }
+  .edu-inst { font-size: 0.8rem; color: var(--muted); margin-bottom: 12px; }
+  .edu-score {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 0.75rem; padding: 4px 12px;
+    background: rgba(16,185,129,0.1); color: var(--accent3);
+    border: 1px solid rgba(16,185,129,0.2); border-radius: 2px;
+  }
+
+  /* ACHIEVEMENTS */
+  #achievements { padding: 100px 60px; }
+  .ach-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; margin-top: 60px; }
+  .ach-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 6px;
+    padding: 28px; transition: all 0.3s; text-align: center;
+  }
+  .ach-card:hover { border-color: rgba(124,58,237,0.4); transform: translateY(-4px); }
+  .ach-icon { font-size: 2.5rem; margin-bottom: 16px; }
+  .ach-title { font-family: var(--display); font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 8px; }
+  .ach-desc { font-size: 0.75rem; line-height: 1.8; color: var(--muted); }
+
+  /* CONTACT */
+  #contact {
+    padding: 100px 60px;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+  }
+  .contact-wrap {
+    max-width: 700px; margin: 0 auto; text-align: center;
+  }
+  .contact-links { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 40px; }
+  .contact-link {
+    display: flex; align-items: center; gap: 10px;
+    padding: 16px 28px; background: var(--card);
+    border: 1px solid var(--border); border-radius: 4px;
+    color: var(--text); text-decoration: none; font-size: 0.8rem;
+    transition: all 0.25s;
+  }
+  .contact-link:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-3px); }
+  .contact-link .icon { font-size: 1.1rem; }
+
+  /* FOOTER */
+  footer {
+    padding: 28px 60px;
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 0.7rem; color: var(--muted);
+  }
+  .footer-accent { color: var(--accent); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .reveal {
+    opacity: 0; transform: translateY(40px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 2px; }
+
+  @media (max-width: 900px) {
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    #hero { padding: 100px 24px 60px; }
+    .hero-visual { display: none; }
+    .stats-bar { margin: 0 24px; flex-wrap: wrap; }
+    #about { padding: 60px 24px; grid-template-columns: 1fr; }
+    #skills, #projects, #education, #achievements, #contact { padding: 60px 24px; }
+    footer { padding: 20px 24px; flex-direction: column; gap: 8px; text-align: center; }
+  }
+</style>
 </head>
 <body>
-    <!-- Hero Section -->
-    <section id="hero">
-        <h1>Welcome to My Portfolio</h1>
-    </section>
 
-    <!-- About Section -->
-    <section id="about">
-        <h2>About Me</h2>
-        <p>Passionate web developer with a focus on creating dynamic and responsive web applications.</p>
-    </section>
+<!-- CURSOR -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
 
-    <!-- Skills Section -->
-    <section id="skills">
-        <h2>Skills</h2>
-        <ul>
-            <li>HTML</li>
-            <li>CSS</li>
-            <li>JavaScript</li>
-            <li>React</li>
-        </ul>
-    </section>
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">A<span>shok</span></div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#education">Education</a></li>
+    <li><a href="#achievements">Achievements</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
 
-    <!-- Projects Section -->
-    <section id="projects">
-        <h2>Projects</h2>
-        <p>Check out my projects on GitHub!</p>
-    </section>
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-tag">⚡ Available for Opportunities</div>
+  <h1 class="hero-name">
+    <span class="accent">A</span>shok
+  </h1>
+  <div class="hero-role">ECE Engineer · Embedded Systems · VLSI Design</div>
+  <p class="hero-desc">
+    B.Tech Electronics & Communication Engineering graduate with 86.07% from B.K. Birla Institute of Engineering & Technology, Pilani. Passionate about building hardware-software systems — from autonomous drones to digital logic design.
+  </p>
+  <div class="hero-cta">
+    <a href="#projects" class="btn btn-primary">▶ View Projects</a>
+    <a href="#contact" class="btn btn-outline">✉ Get In Touch</a>
+  </div>
 
-    <!-- Education Section -->
-    <section id="education">
-        <h2>Education</h2>
-        <p>B.Sc. in Computer Science from XYZ University</p>
-    </section>
+  <!-- CIRCUIT SVG -->
+  <div class="hero-visual">
+    <svg class="circuit-svg" viewBox="0 0 420 420" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#00d4ff" stop-opacity="0.3"/>
+          <stop offset="100%" stop-color="#00d4ff" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <circle cx="210" cy="210" r="180" fill="url(#glow)"/>
+      <!-- circuit lines -->
+      <g stroke="#00d4ff" stroke-width="1" fill="none" opacity="0.5">
+        <line x1="210" y1="30" x2="210" y2="100"/>
+        <line x1="210" y1="100" x2="280" y2="100"/>
+        <line x1="280" y1="100" x2="320" y2="140"/>
+        <line x1="320" y1="140" x2="380" y2="140"/>
+        <line x1="380" y1="140" x2="380" y2="210"/>
+        <line x1="380" y1="210" x2="320" y2="210"/>
+        <line x1="320" y1="210" x2="320" y2="280"/>
+        <line x1="320" y1="280" x2="280" y2="310"/>
+        <line x1="280" y1="310" x2="210" y2="310"/>
+        <line x1="210" y1="310" x2="210" y2="380"/>
+        <line x1="210" y1="380" x2="140" y2="380"/>
+        <line x1="140" y1="380" x2="100" y2="320"/>
+        <line x1="100" y1="320" x2="40" y2="320"/>
+        <line x1="40" y1="320" x2="40" y2="210"/>
+        <line x1="40" y1="210" x2="100" y2="210"/>
+        <line x1="100" y1="210" x2="100" y2="140"/>
+        <line x1="100" y1="140" x2="140" y2="100"/>
+        <line x1="140" y1="100" x2="210" y2="100"/>
+        <!-- inner -->
+        <line x1="210" y1="100" x2="210" y2="150"/>
+        <line x1="320" y1="210" x2="270" y2="210"/>
+        <line x1="210" y1="310" x2="210" y2="260"/>
+        <line x1="100" y1="210" x2="150" y2="210"/>
+        <line x1="210" y1="150" x2="270" y2="210"/>
+        <line x1="270" y1="210" x2="210" y2="260"/>
+        <line x1="210" y1="260" x2="150" y2="210"/>
+        <line x1="150" y1="210" x2="210" y2="150"/>
+      </g>
+      <!-- nodes -->
+      <g fill="#00d4ff">
+        <circle cx="210" cy="30" r="5"><animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite"/></circle>
+        <circle cx="380" cy="140" r="5"><animate attributeName="opacity" values="1;0.3;1" dur="2.5s" repeatCount="indefinite"/></circle>
+        <circle cx="380" cy="210" r="5"><animate attributeName="opacity" values="1;0.3;1" dur="1.8s" repeatCount="indefinite"/></circle>
+        <circle cx="210" cy="380" r="5"><animate attributeName="opacity" values="1;0.3;1" dur="3s" repeatCount="indefinite"/></circle>
+        <circle cx="40" cy="210" r="5"><animate attributeName="opacity" values="1;0.3;1" dur="2.2s" repeatCount="indefinite"/></circle>
+        <circle cx="210" cy="210" r="18" fill="none" stroke="#00d4ff" stroke-width="2"><animate attributeName="r" values="16;22;16" dur="3s" repeatCount="indefinite"/></circle>
+        <circle cx="210" cy="210" r="6"/>
+        <circle cx="280" cy="100" r="4" fill="#7c3aed"/>
+        <circle cx="320" cy="280" r="4" fill="#7c3aed"/>
+        <circle cx="100" cy="140" r="4" fill="#10b981"/>
+        <circle cx="100" cy="320" r="4" fill="#10b981"/>
+      </g>
+      <!-- moving dot -->
+      <circle r="4" fill="#fff" opacity="0.9">
+        <animateMotion dur="6s" repeatCount="indefinite" path="M210,30 L210,100 L280,100 L320,140 L380,140 L380,210 L320,210 L320,280 L280,310 L210,310 L210,380 L140,380 L100,320 L40,320 L40,210 L100,210 L100,140 L140,100 L210,100"/>
+      </circle>
+    </svg>
+  </div>
+</section>
 
-    <!-- Achievements Section -->
-    <section id="achievements">
-        <h2>Achievements</h2>
-        <p>Completed Code Academy and received multiple certifications.</p>
-    </section>
+<!-- STATS -->
+<div class="stats-bar reveal">
+  <div class="stat"><div class="stat-val">86%</div><div class="stat-label">B.Tech Aggregate</div></div>
+  <div class="stat"><div class="stat-val">94%</div><div class="stat-label">Class X Score</div></div>
+  <div class="stat"><div class="stat-val">3+</div><div class="stat-label">Languages Known</div></div>
+  <div class="stat"><div class="stat-val">NCC</div><div class="stat-label">'C' Certificate</div></div>
+</div>
 
-    <!-- Contact Section -->
-    <section id="contact">
-        <h2>Contact Me</h2>
-        <p>Email: example@example.com</p>
-    </section>
+<!-- ABOUT -->
+<section id="about">
+  <div class="reveal">
+    <span class="section-tag">// about me</span>
+    <h2 class="section-title">Engineering the<br/><span>Future</span></h2>
+    <p class="section-body">
+      I'm an ECE engineer with a deep passion for embedded systems, digital design, and hardware-software integration. From building autonomous drones to crafting RTL-level Verilog code, I thrive at the intersection of hardware and intelligence.
+      <br/><br/>
+      When I'm not designing circuits or writing HDL, you'll find me sharpening my strategic thinking on the chess board or staying active on the badminton court.
+    </p>
+    <div class="about-details">
+      <div class="detail-row"><span class="detail-icon">📍</span><span class="detail-label">Location</span><span class="detail-val">Bhiwani, Haryana, India</span></div>
+      <div class="detail-row"><span class="detail-icon">🎓</span><span class="detail-label">Degree</span><span class="detail-val">B.Tech ECE — B.K. Birla Institute, Pilani</span></div>
+      <div class="detail-row"><span class="detail-icon">📅</span><span class="detail-label">Graduated</span><span class="detail-val">2025</span></div>
+      <div class="detail-row"><span class="detail-icon">📧</span><span class="detail-label">Email</span><span class="detail-val">ashokshrn73@gmail.com</span></div>
+      <div class="detail-row"><span class="detail-icon">📱</span><span class="detail-label">Phone</span><span class="detail-val">+91-9728572067</span></div>
+    </div>
+  </div>
+  <div class="about-image-wrap reveal">
+    <div class="glow-ring"></div>
+    <div class="avatar-placeholder">
+      <div class="avatar-icon">⚡</div>
+      <div style="font-size:0.8rem; color: var(--accent); font-family: var(--display); font-weight:700;">ASHOK</div>
+      <div style="font-size:0.65rem; letter-spacing:0.15em;">ECE ENGINEER</div>
+      <div style="font-size:0.65rem; color: var(--muted); margin-top:8px;">Add your photo here</div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="skills-header reveal">
+    <span class="section-tag">// technical skills</span>
+    <h2 class="section-title">What I <span>Work With</span></h2>
+  </div>
+  <div class="skills-grid">
+    <div class="skill-card reveal">
+      <div class="skill-icon">💻</div>
+      <div class="skill-name">Programming Languages</div>
+      <p style="font-size:0.78rem; color:var(--muted); margin-top:8px;">Low-level and hardware-focused programming for embedded and digital systems.</p>
+      <div class="skill-items">
+        <span class="skill-tag">C</span>
+        <span class="skill-tag">Verilog</span>
+        <span class="skill-tag">SystemVerilog</span>
+      </div>
+    </div>
+    <div class="skill-card reveal">
+      <div class="skill-icon">🔌</div>
+      <div class="skill-name">Embedded & Hardware</div>
+      <p style="font-size:0.78rem; color:var(--muted); margin-top:8px;">Hands-on experience integrating sensors, modules, and microcontrollers into real systems.</p>
+      <div class="skill-items">
+        <span class="skill-tag">Arduino</span>
+        <span class="skill-tag">MPU Sensors</span>
+        <span class="skill-tag">GPS Modules</span>
+        <span class="skill-tag">RF Modules</span>
+        <span class="skill-tag">ESC / BLDC</span>
+      </div>
+    </div>
+    <div class="skill-card reveal">
+      <div class="skill-icon">🔬</div>
+      <div class="skill-name">Digital Electronics</div>
+      <p style="font-size:0.78rem; color:var(--muted); margin-top:8px;">Strong theoretical and practical foundation in digital circuit design and logic systems.</p>
+      <div class="skill-items">
+        <span class="skill-tag">Combinational Logic</span>
+        <span class="skill-tag">Sequential Logic</span>
+        <span class="skill-tag">FSMs</span>
+        <span class="skill-tag">VLSI</span>
+        <span class="skill-tag">RTL Design</span>
+      </div>
+    </div>
+    <div class="skill-card reveal">
+      <div class="skill-icon">🛠️</div>
+      <div class="skill-name">EDA Tools & Simulation</div>
+      <p style="font-size:0.78rem; color:var(--muted); margin-top:8px;">Design simulation and verification using industry-standard electronic design automation tools.</p>
+      <div class="skill-items">
+        <span class="skill-tag">EDA Playground</span>
+        <span class="skill-tag">Functional Verification</span>
+        <span class="skill-tag">Testbench Design</span>
+      </div>
+    </div>
+    <div class="skill-card reveal">
+      <div class="skill-icon">🧠</div>
+      <div class="skill-name">Core Competencies</div>
+      <p style="font-size:0.78rem; color:var(--muted); margin-top:8px;">Professional and interpersonal skills that complement strong technical ability.</p>
+      <div class="skill-items">
+        <span class="skill-tag">Problem Solving</span>
+        <span class="skill-tag">Analytical Thinking</span>
+        <span class="skill-tag">Communication</span>
+        <span class="skill-tag">Team Player</span>
+      </div>
+    </div>
+    <div class="skill-card reveal">
+      <div class="skill-icon">🌐</div>
+      <div class="skill-name">Languages</div>
+      <p style="font-size:0.78rem; color:var(--muted); margin-top:8px;">Proficient in multiple human languages enabling effective collaboration.</p>
+      <div class="skill-items">
+        <span class="skill-tag">English (Professional)</span>
+        <span class="skill-tag">Hindi (Native)</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="projects-header reveal">
+    <span class="section-tag">// projects</span>
+    <h2 class="section-title">Things I've <span>Built</span></h2>
+  </div>
+  <div class="projects-grid">
+    <div class="project-card reveal">
+      <div class="project-header">
+        <div class="project-no">PROJECT_01</div>
+        <div class="project-title">Quadcopter (Drone)</div>
+        <div class="project-tech">Arduino · MPU-6050 · GPS · RF Modules · PID Control</div>
+      </div>
+      <div class="project-body">
+        <p class="project-desc">
+          Designed and built a fully functional autonomous quadcopter from the ground up, integrating multiple sensor systems for stable, intelligent flight.
+        </p>
+        <div class="project-features">
+          <div class="feature">Integrated MPU-6050 IMU for real-time attitude stabilization using PID control loops</div>
+          <div class="feature">GPS module enabled waypoint navigation and basic autonomous flight path execution</div>
+          <div class="feature">RF communication modules for reliable long-range remote control (100m+ range)</div>
+          <div class="feature">Achieved stable hover and manual flight with basic autonomous features</div>
+        </div>
+      </div>
+    </div>
+    <div class="project-card reveal" style="opacity:0.6; pointer-events:none;">
+      <div class="project-header">
+        <div class="project-no">PROJECT_02</div>
+        <div class="project-title">Coming Soon...</div>
+        <div class="project-tech">SystemVerilog · RTL · Digital Design</div>
+      </div>
+      <div class="project-body">
+        <p class="project-desc">More projects in progress. Add your next build here — VLSI design, FSM implementation, or any embedded system project.</p>
+        <div style="margin-top:20px; padding: 16px; border: 1px dashed var(--border); border-radius:4px; text-align:center; font-size:0.72rem; color:var(--muted);">
+          🚀 Add your next project
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EDUCATION -->
+<section id="education">
+  <span class="section-tag reveal">// education</span>
+  <h2 class="section-title reveal">Academic <span>Journey</span></h2>
+  <div class="edu-timeline">
+    <div class="edu-item reveal">
+      <div class="edu-year">2021 — 2025</div>
+      <div class="edu-degree">B.Tech — Electronics & Communication Engineering</div>
+      <div class="edu-inst">B.K. Birla Institute of Engineering and Technology, Pilani, Rajasthan</div>
+      <span class="edu-score">✓ Aggregate: 86.07%</span>
+      <p style="margin-top:14px; font-size:0.75rem; color:var(--muted); line-height:1.8;">
+        Coursework: Digital Electronics, VLSI Design, Embedded Systems, Microprocessors, Signals & Systems
+      </p>
+    </div>
+    <div class="edu-item reveal">
+      <div class="edu-year">2021</div>
+      <div class="edu-degree">Senior Secondary (Class XII) — Science</div>
+      <div class="edu-inst">Prince Academy of Higher Education, Sikar, Rajasthan</div>
+      <span class="edu-score">✓ 93.20% — Best in Academics Award 🏆</span>
+    </div>
+    <div class="edu-item reveal">
+      <div class="edu-year">2019</div>
+      <div class="edu-degree">Secondary (Class X)</div>
+      <div class="edu-inst">Prince Academy of Higher Education, Sikar, Rajasthan</div>
+      <span class="edu-score">✓ 94.00% — Regular Merit Holder</span>
+    </div>
+  </div>
+</section>
+
+<!-- ACHIEVEMENTS -->
+<section id="achievements">
+  <div class="reveal">
+    <span class="section-tag">// achievements</span>
+    <h2 class="section-title">Awards & <span>Recognition</span></h2>
+  </div>
+  <div class="ach-grid">
+    <div class="ach-card reveal">
+      <div class="ach-icon">🏆</div>
+      <div class="ach-title">Best in Academics</div>
+      <p class="ach-desc">Awarded trophy & certificate in Class XII for ranking among the top students at Prince Academy of Higher Education, Sikar (2021).</p>
+    </div>
+    <div class="ach-card reveal">
+      <div class="ach-icon">🎖️</div>
+      <div class="ach-title">NCC 'C' Certificate</div>
+      <p class="ach-desc">Holder of the National Cadet Corps 'C' Certificate — demonstrating discipline, leadership, and service to the nation.</p>
+    </div>
+    <div class="ach-card reveal">
+      <div class="ach-icon">⭐</div>
+      <div class="ach-title">Regular Merit Holder</div>
+      <p class="ach-desc">Consistently ranked among top performers throughout secondary schooling, maintaining 90%+ scores across board examinations.</p>
+    </div>
+    <div class="ach-card reveal">
+      <div class="ach-icon">♟️</div>
+      <div class="ach-title">Chess & Badminton</div>
+      <p class="ach-desc">Active player of chess and badminton, developing strategic thinking, focus, and competitive sportsmanship.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-wrap">
+    <span class="section-tag" style="display:block; text-align:center;">// contact</span>
+    <h2 class="section-title reveal">Let's <span>Connect</span></h2>
+    <p class="section-body reveal" style="margin-top:16px;">
+      I'm actively looking for opportunities in embedded systems, VLSI design, and hardware development. Feel free to reach out — I'd love to connect!
+    </p>
+    <div class="contact-links reveal">
+      <a href="mailto:ashokshrn73@gmail.com" class="contact-link">
+        <span class="icon">✉</span> ashokshrn73@gmail.com
+      </a>
+      <a href="tel:+919728572067" class="contact-link">
+        <span class="icon">📞</span> +91-9728572067
+      </a>
+      <a href="#" class="contact-link">
+        <span class="icon">💼</span> LinkedIn
+      </a>
+      <a href="#" class="contact-link">
+        <span class="icon">🐙</span> GitHub
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>© 2025 <span class="footer-accent">Ashok</span> — ECE Engineer</div>
+  <div>Built with <span class="footer-accent">♥</span> · Bhiwani, Haryana</div>
+</footer>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursor-ring');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx + 'px';
+    cursor.style.top = my + 'px';
+  });
+
+  function animateRing() {
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    ring.style.left = rx + 'px';
+    ring.style.top = ry + 'px';
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+
+  document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.style.width = '20px';
+      cursor.style.height = '20px';
+      ring.style.width = '54px';
+      ring.style.height = '54px';
+    });
+    el.addEventListener('mouseleave', () => {
+      cursor.style.width = '12px';
+      cursor.style.height = '12px';
+      ring.style.width = '36px';
+      ring.style.height = '36px';
+    });
+  });
+
+  // Scroll reveal
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 80);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // Active nav link
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 200) current = s.id;
+    });
+    navLinks.forEach(a => {
+      a.style.color = a.getAttribute('href') === '#' + current ? 'var(--accent)' : '';
+    });
+  });
+</script>
 </body>
 </html>
